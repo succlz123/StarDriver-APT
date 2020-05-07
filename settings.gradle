@@ -1,0 +1,4 @@
+include ':app'
+include ':stardriver-apt-lib'
+include ':stardriver-apt-annotation'
+include ':stardriver-apt-processor'
