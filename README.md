@@ -50,10 +50,10 @@ Option 1:
 public class AppInitTaskHelper {
 
     // you can add the annotation on the field
-    @InitOrder(name = "Application logger")
+    @StarDriverInit(name = "Application logger")
     public AppInitLogger logger;
 
-    @InitOrder(name = "Info Report", after = {AppInitLogger.class})
+    @StarDriverInit(name = "Info Report", after = {AppInitLogger.class})
     public AppInitTaskInfoReporting infoReport;
 }
 ~~~
@@ -62,7 +62,7 @@ Option 2:
 
 ~~~java
 // you can also add the annotation on the class
-@InitOrder(name = "Account Info")
+@StarDriverInit(name = "Account Info")
 public class AppInitAccountInfo extends IStarDriver {
 
     @Override

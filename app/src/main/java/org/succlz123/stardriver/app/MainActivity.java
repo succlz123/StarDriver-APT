@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.succlz123.stardriver.R;
 import org.succlz123.stardriver.StarDriverManager;
-import org.succlz123.stardriver.StarDriverStatisticsResult;
+import org.succlz123.stardriver.StarDriverStatistics;
 
 import java.util.ArrayList;
 
@@ -19,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TextView tv = findViewById(R.id.content);
-        ArrayList<StarDriverStatisticsResult> results = StarDriverManager.inject(this.getApplication());
-        for (StarDriverStatisticsResult result : results) {
+        ArrayList<StarDriverStatistics> results = StarDriverManager.inject(this.getApplication());
+        for (StarDriverStatistics result : results) {
             tv.append(result.name + "\nsuccess: " + result.success + " time: " + result.useTime + "ms\n");
             if (!result.success && result.errorMessage != null) {
                 tv.append("message: " + result.errorMessage + "\n\n");

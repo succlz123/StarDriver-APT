@@ -32,7 +32,7 @@ import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
 @AutoService(Processor.class)
-public class InitTaskProcessor extends AbstractProcessor {
+public class StarDriverProcessor extends AbstractProcessor {
     private static final String TAG = "Star Driver";
     private static final String PACKAGE_NAME = "org.succlz123.stardriver";
     private Messager mMessager;
@@ -95,7 +95,7 @@ public class InitTaskProcessor extends AbstractProcessor {
     private MethodSpec generateMethods() {
         ClassName host = ClassName.get("android.app", "Application");
         String packageName = this.getClass().getPackage().getName();
-        ClassName result = ClassName.get(packageName, "StarDriverStatisticsResult");
+        ClassName result = ClassName.get(packageName, "StarDriverStatistics");
         ClassName arrayList = ClassName.get(ArrayList.class);
         ParameterizedTypeName returnType = ParameterizedTypeName.get(arrayList, result);
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("inject")
