@@ -1,6 +1,16 @@
-## Star Driver 驭星者
+## Star Driver
 
 A library for managing the initialization tasks when an android application startup. It provides a simple way to control the order of tasks.
+
+## Version
+
+- APT/Android Annotation Processor
+
+    https://github.com/succlz123/StarDriver-APT
+
+- Gradle Transform
+
+    https://github.com/succlz123/StarDriver-Transform
 
 ## Work Flow
 

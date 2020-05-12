@@ -1,10 +1,8 @@
 package org.succlz123.stardriver.app;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.succlz123.stardriver.R;
 import org.succlz123.stardriver.StarDriverManager;
@@ -12,10 +10,10 @@ import org.succlz123.stardriver.StarDriverStatistics;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TextView tv = findViewById(R.id.content);

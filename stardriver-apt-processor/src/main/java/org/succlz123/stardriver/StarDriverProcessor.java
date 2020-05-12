@@ -37,7 +37,7 @@ public class StarDriverProcessor extends AbstractProcessor {
     private static final String PACKAGE_NAME = "org.succlz123.stardriver";
     private Messager mMessager;
     private Elements mElementUtils;
-    private Map<String, ClassNode> mNodeHashMap = new HashMap<>();
+    private Map<String, ProcessClassNode> mNodeHashMap = new HashMap<>();
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -60,26 +60,27 @@ public class StarDriverProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
+        long startTime = System.currentTimeMillis();
         Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(StarDriverInit.class);
         if (elements != null && !elements.isEmpty()) {
-            mMessager.printMessage(Diagnostic.Kind.NOTE, TAG + " -> processing =========");
+            mMessager.printMessage(Diagnostic.Kind.NOTE, TAG + " -> processing");
             mNodeHashMap.clear();
             for (Element element : elements) {
                 String fullName = element.asType().toString();
-                ClassNode proxy = mNodeHashMap.get(fullName);
+                ProcessClassNode proxy = mNodeHashMap.get(fullName);
                 if (proxy == null) {
-                    proxy = new ClassNode(new ClassParameter(mElementUtils, element));
+                    proxy = new ProcessClassNode(new ClassParameter(mElementUtils, element));
                     mNodeHashMap.put(fullName, proxy);
                 }
             }
             try {
-                mMessager.printMessage(Diagnostic.Kind.NOTE, TAG + " -> create");
                 JavaFile javaFile = JavaFile.builder(PACKAGE_NAME, generateManagerCode()).build();
                 javaFile.writeTo(processingEnv.getFiler());
             } catch (Exception e) {
-                mMessager.printMessage(Diagnostic.Kind.ERROR, TAG + " -> create " + e);
+                mMessager.printMessage(Diagnostic.Kind.ERROR, TAG + " -> process error " + e);
             }
-            mMessager.printMessage(Diagnostic.Kind.NOTE, TAG + " -> process finish =========");
+            double cost = (System.currentTimeMillis() - startTime) / 1000d;
+            mMessager.printMessage(Diagnostic.Kind.NOTE, TAG + " -> process finish cost time: " + cost + "s");
         }
         return true;
     }
@@ -107,9 +108,9 @@ public class StarDriverProcessor extends AbstractProcessor {
                 .endControlFlow();
         methodBuilder.addStatement("$T<$T> resultList = new $T<>()", ArrayList.class, result, ArrayList.class);
 
-        Set<Map.Entry<String, ClassNode>> entries = mNodeHashMap.entrySet();
-        for (Map.Entry<String, ClassNode> entry : entries) {
-            ClassNode currentNode = entry.getValue();
+        Set<Map.Entry<String, ProcessClassNode>> entries = mNodeHashMap.entrySet();
+        for (Map.Entry<String, ProcessClassNode> entry : entries) {
+            ProcessClassNode currentNode = entry.getValue();
             ClassParameter currentParameter = entry.getValue().value;
             // https://stackoverflow.com/questions/7687829/java-6-annotation-processing-getting-a-class-from-an-annotation/52793839#52793839
             try {
@@ -117,7 +118,7 @@ public class StarDriverProcessor extends AbstractProcessor {
             } catch (javax.lang.model.type.MirroredTypesException mte) {
                 List<? extends TypeMirror> typeMirrors = mte.getTypeMirrors();
                 for (TypeMirror typeMirror : typeMirrors) {
-                    ClassNode node = mNodeHashMap.get(typeMirror.toString());
+                    ProcessClassNode node = mNodeHashMap.get(typeMirror.toString());
                     currentNode.count++;
                     node.next.add(currentNode);
                 }
@@ -127,31 +128,31 @@ public class StarDriverProcessor extends AbstractProcessor {
             } catch (javax.lang.model.type.MirroredTypesException mte) {
                 List<? extends TypeMirror> typeMirrors = mte.getTypeMirrors();
                 for (TypeMirror typeMirror : typeMirrors) {
-                    ClassNode node = mNodeHashMap.get(typeMirror.toString());
+                    ProcessClassNode node = mNodeHashMap.get(typeMirror.toString());
                     node.count++;
                     currentNode.next.add(node);
                 }
             }
         }
         List<ClassParameter> list = new ArrayList<>(entries.size());
-        Stack<ClassNode> miniStack = new Stack<>();
-        for (Map.Entry<String, ClassNode> entry : entries) {
+        Stack<ProcessClassNode> stack = new Stack<>();
+        for (Map.Entry<String, ProcessClassNode> entry : entries) {
             if (entry.getValue().count == 0) {
-                miniStack.push(entry.getValue());
+                stack.push(entry.getValue());
             }
         }
-        while (!miniStack.isEmpty()) {
-            ClassNode classNode = miniStack.pop();
-            if (classNode == null) {
+        while (!stack.isEmpty()) {
+            ProcessClassNode processClassNode = stack.pop();
+            if (processClassNode == null) {
                 break;
             }
-            for (ClassNode node : classNode.next) {
+            for (ProcessClassNode node : processClassNode.next) {
                 node.count--;
                 if (node.count == 0) {
-                    miniStack.push(node);
+                    stack.push(node);
                 }
             }
-            list.add(classNode.value);
+            list.add(processClassNode.value);
         }
 
         if (list.size() != entries.size()) {
@@ -159,7 +160,7 @@ public class StarDriverProcessor extends AbstractProcessor {
                 mNodeHashMap.remove(classParameter.classFullName);
             }
             StringBuilder sb = new StringBuilder("The init tasks is Cycle, please check it carefully -> \n");
-            for (Map.Entry<String, ClassNode> entry : entries) {
+            for (Map.Entry<String, ProcessClassNode> entry : entries) {
                 sb.append(entry.getValue().value.classFullName);
                 sb.append("\n");
             }
@@ -187,21 +188,18 @@ public class StarDriverProcessor extends AbstractProcessor {
         return methodBuilder.build();
     }
 
-    private static class ClassNode implements Comparable<ClassNode> {
+    private static class ProcessClassNode implements Comparable<ProcessClassNode> {
         int count;
         ClassParameter value;
-        List<ClassNode> next = new ArrayList<>();
+        List<ProcessClassNode> next = new ArrayList<>();
 
-        public ClassNode(ClassParameter value) {
+        public ProcessClassNode(ClassParameter value) {
             this.value = value;
         }
 
         @Override
-        public int compareTo(ClassNode classNode) {
-            if (classNode != null) {
-                return count - classNode.count;
-            }
-            return 1;
+        public int compareTo(ProcessClassNode processClassNode) {
+            return count - processClassNode.count;
         }
     }
 
