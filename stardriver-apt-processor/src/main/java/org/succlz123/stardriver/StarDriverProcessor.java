@@ -134,6 +134,13 @@ public class StarDriverProcessor extends AbstractProcessor {
                 }
             }
         }
+
+        methodBuilder.addJavadoc("====== dot language - plantuml ======\n\n");
+        String dot = getToDot(entries);
+        methodBuilder.addJavadoc(dot);
+        methodBuilder.addJavadoc("\n\n====== copy the above code to display the graph ======\n\n");
+        mMessager.printMessage(Diagnostic.Kind.NOTE, "dot language: \n" + dot + "\n");
+
         List<ClassParameter> list = new ArrayList<>(entries.size());
         Stack<ProcessClassNode> stack = new Stack<>();
         for (Map.Entry<String, ProcessClassNode> entry : entries) {
@@ -167,9 +174,17 @@ public class StarDriverProcessor extends AbstractProcessor {
             throw new IllegalStateException(sb.toString());
         }
 
-        for (ClassParameter parameter : list) {
-            methodBuilder.addJavadoc("\"" + parameter.simpleName + "\"" + " - >");
+        methodBuilder.addJavadoc("⏬ Init task sequence ⏬");
+        methodBuilder.addJavadoc("\n\n");
+
+        for (int i = 0; i < list.size(); i++) {
+            ClassParameter parameter = list.get(i);
+            methodBuilder.addJavadoc("\"" + parameter.simpleName + "\"");
+            if (i != list.size() - 1) {
+                methodBuilder.addJavadoc(" - >");
+            }
         }
+        methodBuilder.addJavadoc("\n\n");
 
         methodBuilder.addStatement("long now = 0L");
         for (ClassParameter parameter : list) {
@@ -186,6 +201,25 @@ public class StarDriverProcessor extends AbstractProcessor {
         }
         methodBuilder.addStatement("return resultList");
         return methodBuilder.build();
+    }
+
+    private static String getToDot(Set<Map.Entry<String, ProcessClassNode>> entries) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("@startuml\n").append("digraph ").append("StarDriver").append(" {");
+        sb.append("\n");
+        for (Map.Entry<String, ProcessClassNode> entry : entries) {
+            sb.append("    ").append(entry.getValue().value.classSimpleName).append(";\n");
+        }
+        sb.append("\n");
+        for (Map.Entry<String, ProcessClassNode> entry : entries) {
+            for (ProcessClassNode processClassNode : entry.getValue().next) {
+                sb.append("    ").append(entry.getValue().value.classSimpleName).append(" -> ")
+                        .append(processClassNode.value.classSimpleName).append(";\n");
+            }
+            sb.append("    ").append(entry.getValue().value.classSimpleName).append(";\n");
+        }
+        sb.append("}\n").append("@enduml");
+        return sb.toString();
     }
 
     private static class ProcessClassNode implements Comparable<ProcessClassNode> {

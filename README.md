@@ -8,7 +8,7 @@ A library for managing the initialization tasks when an android application star
 
     https://github.com/succlz123/StarDriver-APT
 
-- Gradle Transform
+- Gradle Transform Plugin
 
     https://github.com/succlz123/StarDriver-Transform
 
@@ -102,3 +102,11 @@ public class MainApplication extends Application {
     }
 }
 ~~~
+
+## Plant UML
+
+Copy the output of the build console into the StarDriverDigraph.puml file and install the Plant uml plug-in for Android Studio.
+
+Then you can see the diagram like this.
+
+![1](images/StarDriverDigraph.png)

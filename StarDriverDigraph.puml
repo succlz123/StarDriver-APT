@@ -1,0 +1,27 @@
+@startuml
+digraph StarDriver {
+      sdkA;
+      AppInitImage;
+      logger;
+      AppInitCrashTracking;
+      AppInitTaskInfoReporting;
+      AppInitAccountInfo;
+      sdkB;
+
+      sdkA -> AppInitAccountInfo;
+      sdkA;
+      AppInitImage;
+      logger -> AppInitTaskInfoReporting;
+      logger;
+      AppInitCrashTracking -> sdkA;
+      AppInitCrashTracking -> sdkB;
+      AppInitCrashTracking;
+      AppInitTaskInfoReporting -> AppInitCrashTracking;
+      AppInitTaskInfoReporting;
+      AppInitAccountInfo -> AppInitImage;
+      AppInitAccountInfo;
+      sdkB -> sdkA;
+      sdkB -> AppInitAccountInfo;
+      sdkB;
+}
+@enduml
