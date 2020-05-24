@@ -4,7 +4,7 @@ A library for managing the initialization tasks when an android application star
 
 ## Version
 
-- APT/Android Annotation Processor
+- APT/Annotation Processor Tool
 
     https://github.com/succlz123/StarDriver-APT
 
