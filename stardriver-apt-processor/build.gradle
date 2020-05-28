@@ -1,4 +1,5 @@
 apply plugin: 'java-library'
+apply plugin: 'com.github.dcendents.android-maven'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -9,5 +10,6 @@ dependencies {
     implementation project(':stardriver-apt-annotation')
 }
 
-sourceCompatibility = "7"
-targetCompatibility = "7"
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}

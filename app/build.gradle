@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId "org.succlz123.stardriver.app.apt"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -19,14 +19,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':stardriver-apt-lib')
-    implementation project(':stardriver-apt-annotation')
     annotationProcessor project(':stardriver-apt-processor')
 
     implementation "androidx.annotation:annotation:1.1.0"

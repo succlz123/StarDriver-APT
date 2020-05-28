@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import org.succlz123.stardriver.R;
 import org.succlz123.stardriver.StarDriverManager;
 import org.succlz123.stardriver.StarDriverStatistics;
 
